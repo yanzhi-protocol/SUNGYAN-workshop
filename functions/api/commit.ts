@@ -8,14 +8,11 @@ interface Env {
 interface CommitBody {
   secret: string;
   slug: string;
-  content: string;
+  content?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const onRequestPost = async (context: any) => {
-  const env = context.env;
-
-  // CORS headers
+// 統一處理邏輯
+async function handleCommit(request: Request, env: Env, method: string) {
   const corsHeaders = {
     "Access-Control-Allow-Origin": "*",
     "Content-Type": "application/json",
@@ -23,28 +20,18 @@ export const onRequestPost = async (context: any) => {
 
   let body: CommitBody;
   try {
-    body = (await context.request.json()) as CommitBody;
+    body = (await request.json()) as CommitBody;
   } catch {
-    return new Response(JSON.stringify({ error: "無效的請求格式" }), {
-      status: 400,
-      headers: corsHeaders,
-    });
+    return new Response(JSON.stringify({ error: "無效的請求格式" }), { status: 400, headers: corsHeaders });
   }
 
-  // 驗證密鑰
   if (!body.secret || body.secret !== env.ADMIN_SECRET) {
-    return new Response(JSON.stringify({ error: "密鑰錯誤" }), {
-      status: 401,
-      headers: corsHeaders,
-    });
+    return new Response(JSON.stringify({ error: "密鑰錯誤" }), { status: 401, headers: corsHeaders });
   }
 
   const { slug, content } = body;
-  if (!slug || !content) {
-    return new Response(JSON.stringify({ error: "缺少必要欄位" }), {
-      status: 400,
-      headers: corsHeaders,
-    });
+  if (!slug) {
+    return new Response(JSON.stringify({ error: "缺少必要欄位 slug" }), { status: 400, headers: corsHeaders });
   }
 
   const owner = env.GITHUB_OWNER || "yanzhi-protocol";
@@ -61,62 +48,66 @@ export const onRequestPost = async (context: any) => {
   };
 
   try {
-    // 檢查檔案是否已存在（取得 SHA）
+    // 1. 檢查檔案是否已存在（取得 SHA）
     let sha: string | undefined;
-    try {
-      const checkRes = await fetch(`${apiBase}/contents/${filePath}`, { headers });
-      if (checkRes.ok) {
-        const checkData = await checkRes.json() as { sha: string };
-        sha = checkData.sha;
-      }
-    } catch {
-      // 檔案不存在，正常
+    const checkRes = await fetch(`${apiBase}/contents/${filePath}`, { headers });
+    if (checkRes.ok) {
+      const checkData = await checkRes.json() as { sha: string };
+      sha = checkData.sha;
     }
 
-    // 建立或更新檔案
-    const contentBase64 = btoa(unescape(encodeURIComponent(content)));
-    const commitBody: Record<string, unknown> = {
-      message: `feat: add log ${slug}`,
-      content: contentBase64,
-      branch: "main",
-    };
-    if (sha) commitBody.sha = sha;
+    if (method === "POST") {
+      if (!content) throw new Error("缺少內容");
+      const contentBase64 = btoa(unescape(encodeURIComponent(content)));
+      const commitBody: Record<string, unknown> = {
+        message: `feat: update log ${slug}`,
+        content: contentBase64,
+        branch: "main",
+      };
+      if (sha) commitBody.sha = sha;
 
-    const putRes = await fetch(`${apiBase}/contents/${filePath}`, {
-      method: "PUT",
-      headers,
-      body: JSON.stringify(commitBody),
-    });
+      const putRes = await fetch(`${apiBase}/contents/${filePath}`, {
+        method: "PUT",
+        headers,
+        body: JSON.stringify(commitBody),
+      });
 
-    if (!putRes.ok) {
-      const errData = (await putRes.json()) as { message?: string };
-      throw new Error(errData.message ?? `GitHub API 錯誤 ${putRes.status}`);
+      if (!putRes.ok) throw new Error("GitHub API PUT 錯誤");
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
+
+    } else if (method === "DELETE") {
+      if (!sha) throw new Error("找不到該文章，無法刪除");
+      
+      const deleteRes = await fetch(`${apiBase}/contents/${filePath}`, {
+        method: "DELETE",
+        headers,
+        body: JSON.stringify({
+          message: `refactor: delete log ${slug}`,
+          sha: sha,
+          branch: "main",
+        }),
+      });
+
+      if (!deleteRes.ok) throw new Error("GitHub API DELETE 錯誤");
+      return new Response(JSON.stringify({ success: true }), { status: 200, headers: corsHeaders });
     }
 
-    const result = (await putRes.json()) as { commit: { sha: string } };
-    return new Response(
-      JSON.stringify({
-        success: true,
-        commit: result.commit?.sha?.slice(0, 7),
-        file: filePath,
-      }),
-      { status: 200, headers: corsHeaders }
-    );
+    return new Response(JSON.stringify({ error: "不支援的方法" }), { status: 405, headers: corsHeaders });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "未知錯誤";
-    return new Response(JSON.stringify({ error: message }), {
-      status: 500,
-      headers: corsHeaders,
-    });
+    return new Response(JSON.stringify({ error: message }), { status: 500, headers: corsHeaders });
   }
-};
+}
+
+export const onRequestPost = async (context: any) => handleCommit(context.request, context.env, "POST");
+export const onRequestDelete = async (context: any) => handleCommit(context.request, context.env, "DELETE");
 
 export const onRequestOptions = async () => {
   return new Response(null, {
     status: 204,
     headers: {
       "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Methods": "POST, DELETE, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     },
   });
