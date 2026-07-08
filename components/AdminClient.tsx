@@ -1,14 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 const CATEGORIES = ["開發日誌", "思想碎片", "生活記錄", "AI 日記"];
-
-interface PostMeta {
-  slug: string;
-  title: string;
-  date: string;
-  category: string;
-}
 
 export default function AdminClient() {
   const [secret, setSecret] = useState("");
@@ -21,15 +14,8 @@ export default function AdminClient() {
   const [aiDiary, setAiDiary] = useState(false);
   const [content, setContent] = useState("");
 
-  const [posts, setPosts] = useState<PostMeta[]>([]);
-  const [loadingPosts, setLoadingPosts] = useState(false);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMsg, setErrorMsg] = useState("");
-
-  // 取得文章列表 (這裡因為是靜態匯出，我們透過 API 或從 build 時期傳入，
-  // 但為了方便，我們在解鎖後嘗試從本地 API 獲取，或者提示用戶手動輸入 slug 刪除)
-  // 由於是 output: export，我們無法在客戶端直接讀取檔案系統。
-  // 我們改為：解鎖後顯示「發布文章」和「刪除指定文章」兩個區塊。
 
   function handleUnlock(e: React.FormEvent) {
     e.preventDefault();
@@ -42,6 +28,10 @@ export default function AdminClient() {
   }
 
   async function handleDelete(slug: string) {
+    if (!slug.trim()) {
+      setErrorMsg("請輸入要刪除的文章 slug");
+      return;
+    }
     if (!confirm(`確定要刪除「${slug}」嗎？這將會從 GitHub 移除檔案。`)) return;
     
     setStatus("loading");
@@ -61,6 +51,8 @@ export default function AdminClient() {
 
       alert("刪除成功！GitHub 正在重新部署。");
       setStatus("idle");
+      const input = document.getElementById("delete-slug") as HTMLInputElement;
+      if (input) input.value = "";
     } catch (err: unknown) {
       setStatus("error");
       setErrorMsg(err instanceof Error ? err.message : "刪除失敗");
@@ -197,7 +189,7 @@ ai_diary: ${aiDiary}
           <button 
             onClick={() => {
               const input = document.getElementById("delete-slug") as HTMLInputElement;
-              if (input.value) handleDelete(input.value);
+              if (input && input.value) handleDelete(input.value);
             }}
             style={{ background: "#ef4444", color: "white", border: "none", borderRadius: "8px", padding: "0 1.5rem", cursor: "pointer", whiteSpace: "nowrap" }}
           >
