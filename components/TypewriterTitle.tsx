@@ -40,10 +40,10 @@ export default function TypewriterTitle() {
     ));
 
   return (
-    <h1 key={language} className="hero-title" aria-label={title.label}>
+    <h1 key={language} className={`hero-title hero-title--${language}`} aria-label={title.label}>
       {renderCharacters(title.prefix, 0)}
       <span className={`title-rule${visibleCount > title.prefix.length ? " visible" : ""}`} aria-hidden="true" />
-      {renderCharacters(title.suffix, title.prefix.length + 1)}
+      <span className="title-suffix">{renderCharacters(title.suffix, title.prefix.length + 1)}</span>
     </h1>
   );
 }
