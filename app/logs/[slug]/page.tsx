@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import Nav from "@/components/Nav";
+import BilingualText from "@/components/BilingualText";
+import BilingualMarkdown from "@/components/BilingualMarkdown";
 import { getAllPosts, getPostBySlug } from "@/lib/posts";
 
 export async function generateStaticParams() {
@@ -19,7 +19,7 @@ export default function LogPage({ params }: { params: { slug: string } }) {
       <main className="page-shell">
         <header className="article-header">
           <div className="article-meta">
-            <span>{post.category}</span>
+            <BilingualText zh={post.category} en={post.category_en} />
             <span aria-hidden="true">·</span>
             <time dateTime={post.date}>{post.date}</time>
             {post.commit && (
@@ -35,31 +35,24 @@ export default function LogPage({ params }: { params: { slug: string } }) {
               </>
             )}
           </div>
-          <h1 className="article-title">{post.title}</h1>
+          <BilingualText as="h1" className="article-title" zh={post.title} en={post.title_en} />
           {post.tags && post.tags.length > 0 && (
-            <div className="tag-list" aria-label="文章標籤">
-              {post.tags.map((tag) => <span key={tag} className="tag">{tag}</span>)}
+            <div className="tag-list" aria-label="文章標籤 / Article tags">
+              {post.tags.map((tag, index) => (
+                <span key={tag} className="tag">
+                  <BilingualText zh={tag} en={post.tags_en[index] ?? tag} />
+                </span>
+              ))}
             </div>
           )}
         </header>
 
         <article className="article-body">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            components={{
-              a: ({ href, children, ...props }) => (
-                <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
-                  {children}
-                </a>
-              ),
-            }}
-          >
-            {post.content}
-          </ReactMarkdown>
+          <BilingualMarkdown zh={post.content} en={post.content_en} />
         </article>
 
         <Link href="/logs" className="back-link">
-          ← 返回日誌列表
+          <BilingualText zh="← 返回日誌列表" en="← Back to journal" />
         </Link>
       </main>
     </>

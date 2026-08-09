@@ -1,24 +1,28 @@
 import Nav from "@/components/Nav";
 import LogCard from "@/components/LogCard";
+import BilingualText from "@/components/BilingualText";
 import { getAllPosts, getAllCategories } from "@/lib/posts";
+import { categoryEnglish, UI } from "@/lib/i18n";
 
 export default function LogsPage() {
   const posts = getAllPosts();
   const categories = getAllCategories();
+  const categoriesZh = categories.join("、");
+  const categoriesEn = categories.map(categoryEnglish).join(", ");
 
   return (
     <>
       <Nav />
-      <main style={{ maxWidth: "680px", margin: "0 auto", padding: "0 1.5rem 4rem" }}>
-        <h1 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "0.5rem" }}>
-          開發日誌
-        </h1>
-        <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "2rem" }}>
-          共 {posts.length} 篇 · 涵蓋{" "}
-          {categories.join("、")}
-        </p>
+      <main className="page-shell page-narrow">
+        <BilingualText as="h1" className="page-title" zh={UI.pages.logs.title.zh} en={UI.pages.logs.title.en} />
+        <BilingualText
+          as="p"
+          className="page-intro"
+          zh={UI.pages.logs.summary.zh.replace("{count}", String(posts.length)).replace("{categories}", categoriesZh)}
+          en={UI.pages.logs.summary.en.replace("{count}", String(posts.length)).replace("{categories}", categoriesEn)}
+        />
 
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+        <div className="log-list">
           {posts.map((post) => (
             <LogCard key={post.slug} post={post} />
           ))}

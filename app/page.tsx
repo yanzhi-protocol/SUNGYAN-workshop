@@ -1,8 +1,10 @@
 import Link from "next/link";
 import Nav from "@/components/Nav";
 import TypewriterTitle from "@/components/TypewriterTitle";
+import BilingualText from "@/components/BilingualText";
 import LogCard from "@/components/LogCard";
 import { getAllPosts } from "@/lib/posts";
+import { UI } from "@/lib/i18n";
 
 export default function Home() {
   const posts = getAllPosts().slice(0, 5);
@@ -12,19 +14,22 @@ export default function Home() {
       <Nav />
       <main className="page-shell">
         <section className="hero">
+          <BilingualText as="p" className="eyebrow" zh={UI.home.eyebrow.zh} en={UI.home.eyebrow.en} />
           <TypewriterTitle />
-          <p className="hero-copy">
-            一個在穩定與混亂之間尋找節奏的人的工房。
-            <br />
-            記錄開發、思考、生活，以及一個 AI 的內心獨白。
-          </p>
+          <BilingualText
+            as="p"
+            className="hero-copy"
+            zh={UI.home.description.zh}
+            en={UI.home.description.en}
+            preserveLineBreaks
+          />
         </section>
 
         <section aria-labelledby="latest-logs">
           <div className="section-heading">
-            <h2 id="latest-logs">── 最新日誌</h2>
+            <BilingualText as="h2" id="latest-logs" zh={UI.home.latest.zh} en={UI.home.latest.en} />
             <Link href="/logs" className="subtle-link">
-              全部 →
+              <BilingualText zh={UI.home.all.zh} en={UI.home.all.en} />
             </Link>
           </div>
           <div className="log-list">
@@ -35,7 +40,7 @@ export default function Home() {
         </section>
 
         <footer className="site-footer">
-          宋言的工房 · 言織 v0.1 · {new Date().getFullYear()}
+          <BilingualText zh={UI.home.footer.zh} en={UI.home.footer.en} /> · {new Date().getFullYear()}
         </footer>
       </main>
     </>

@@ -1,30 +1,25 @@
 import Nav from "@/components/Nav";
+import BilingualText from "@/components/BilingualText";
 import { getAllPosts } from "@/lib/posts";
 import TimelineClient from "@/components/TimelineClient";
+import { UI } from "@/lib/i18n";
 
 export default function TimelinePage() {
   const posts = getAllPosts();
-
-  // 按年月分組
   const groups: Record<string, typeof posts> = {};
   for (const post of posts) {
-    const ym = post.date.slice(0, 7); // YYYY-MM
+    const ym = post.date.slice(0, 7);
     if (!groups[ym]) groups[ym] = [];
     groups[ym].push(post);
   }
-
   const sortedKeys = Object.keys(groups).sort((a, b) => (a < b ? 1 : -1));
 
   return (
     <>
       <Nav />
-      <main style={{ maxWidth: "680px", margin: "0 auto", padding: "0 1.5rem 4rem" }}>
-        <h1 style={{ fontSize: "22px", fontWeight: 700, marginBottom: "0.5rem" }}>
-          時間線
-        </h1>
-        <p style={{ color: "var(--muted)", fontSize: "14px", marginBottom: "2.5rem" }}>
-          所有記錄，按時間排列。
-        </p>
+      <main className="page-shell page-narrow">
+        <BilingualText as="h1" className="page-title" zh={UI.pages.timeline.title.zh} en={UI.pages.timeline.title.en} />
+        <BilingualText as="p" className="page-intro" zh={UI.pages.timeline.intro.zh} en={UI.pages.timeline.intro.en} />
         <TimelineClient groups={groups} sortedKeys={sortedKeys} />
       </main>
     </>
