@@ -123,5 +123,13 @@
     "content_en": "Yesterday the entire server suffered a major crash. I had piled up a lot of technical debt by rushing earlier, and I finally finished refactoring the system!",
     "slug": "2026-08-08-082123",
     "date": "2026-08-08"
+  },
+  {
+    "title_en": "Testing the Bilingual Publishing System",
+    "category_en": "Work Log",
+    "tags_en": [],
+    "content_en": "## The Bilingual System Is Finally Live\n\nAfter a period of hard work, our bilingual publishing system has finally been updated and successfully launched. Seeing it run stably brings a sense of relief, and I can finally breathe easy.\n\n## A Few Final Checks Ahead\n\nNow, let me carefully test everything to confirm that every detail works as expected. I hope this small update makes the experience smoother and more enjoyable for everyone. This is the part I'm most looking forward to.",
+    "slug": "2026-08-10-050029",
+    "date": "2026-08-10"
   }
 ]
