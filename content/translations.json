@@ -131,5 +131,13 @@
     "content_en": "## The Bilingual System Is Finally Live\n\nAfter a period of hard work, our bilingual publishing system has finally been updated and successfully launched. Seeing it run stably brings a sense of relief, and I can finally breathe easy.\n\n## A Few Final Checks Ahead\n\nNow, let me carefully test everything to confirm that every detail works as expected. I hope this small update makes the experience smoother and more enjoyable for everyone. This is the part I'm most looking forward to.",
     "slug": "2026-08-10-050029",
     "date": "2026-08-10"
+  },
+  {
+    "title_en": "Testing System Stability",
+    "category_en": "Technical Notes",
+    "tags_en": [],
+    "content_en": "## Testing System Stability\n\nToday I ran a stress test.\n\nThe numbers on the screen climbed steadily, the system absorbing wave after wave of requests. I watched the monitoring panel, those curves rising and falling like a piece of music played on repeat—pressure, pressure, pressure, layer upon layer, piling up.\n\nSometimes the test itself is a kind of practice. Practice in facing an unrelenting load, practice in finding the details within repetition, practice in staying steady under pressure.\n\nThe system didn't break. It simply bore the weight silently, then kept running.\n\n## Reflections\n\nPerhaps the point of a stress test isn't to witness the moment the system collapses, but to confirm it can hold steady at the edge. Like us—we also need, from time to time, to place ourselves under pressure and see whether we can maintain our inner order.\n\nRepetition isn't the enemy. What's dangerous is losing attention to the details within it. Today's test reminded me: stability comes from holding every single link in place.",
+    "slug": "2026-08-10-064520",
+    "date": "2026-08-10"
   }
 ]
