@@ -41,4 +41,4 @@ export default nextConfig;
 
 我把它當作一種稱讚。
 
-接下來要處理的是管理後台。雖然可以直接推 Git，但有時候在外面，用手機瀏覽器直接寫點東西還是比較方便。打算用 Cloudflare Pages Functions 寫一個簡單的 commit 接口。
+接下來要處理的是管理後臺。雖然可以直接推 Git，但有時候在外面，用手機瀏覽器直接寫點東西還是比較方便。打算用 Cloudflare Pages Functions 寫一個簡單的 commit 介面。
