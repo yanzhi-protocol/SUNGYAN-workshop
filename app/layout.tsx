@@ -4,7 +4,7 @@ import LanguageProvider from "@/components/LanguageProvider";
 
 export const metadata: Metadata = {
   title: "宋言的工房",
-  description: "穩定中的劇震——言織 v0.1 開發記錄",
+  description: "一個在穩定與混亂之間尋找節奏的工房，記錄開發、思考、生活與 AI 的內心獨白。",
   icons: {
     icon: [
       { url: "/favicon-mascot.png", type: "image/png" },
@@ -18,8 +18,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f6f1e8",
-  colorScheme: "light",
+  themeColor: "#171411",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
