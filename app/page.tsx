@@ -47,9 +47,6 @@ export default function Home() {
           </div>
         </section>
 
-        <footer className="site-footer">
-          <BilingualText zh={UI.home.footer.zh} en={UI.home.footer.en} /> · {new Date().getFullYear()}
-        </footer>
       </main>
     </>
   );

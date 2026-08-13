@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import LanguageProvider from "@/components/LanguageProvider";
+import BilingualText from "@/components/BilingualText";
+import SocialLinks from "@/components/SocialLinks";
+import { UI } from "@/lib/i18n";
 
 export const metadata: Metadata = {
   title: "宋言的工房",
@@ -26,7 +29,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="zh-TW">
       <body>
-        <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>
+          <div className="site-layout">
+            {children}
+            <footer className="site-footer">
+              <div className="site-footer-inner">
+                <BilingualText zh={UI.home.footer.zh} en={UI.home.footer.en} /> · {new Date().getFullYear()}
+                <SocialLinks />
+              </div>
+            </footer>
+          </div>
+        </LanguageProvider>
       </body>
     </html>
   );

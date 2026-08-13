@@ -1,6 +1,7 @@
 import Nav from "@/components/Nav";
 import BilingualText from "@/components/BilingualText";
 import { UI } from "@/lib/i18n";
+import SocialLinks from "@/components/SocialLinks";
 
 const stack = [
   ["框架", "Framework", "Next.js 14 (App Router)"],
@@ -42,14 +43,15 @@ export default function AboutPage() {
           </div>
         </section>
 
-        <section>
+        <section className="about-contact">
           <BilingualText as="h2" className="small-section-title" zh={UI.pages.about.contact.zh} en={UI.pages.about.contact.en} />
-          <p className="contact-line">
-            <BilingualText zh="GitHub" en="GitHub" />{" "}
-            <a href="https://github.com/yanzhi-protocol" target="_blank" rel="noopener noreferrer">
-              yanzhi-protocol
-            </a>
-          </p>
+          <BilingualText
+            as="p"
+            className="contact-intro"
+            zh="在以下平台延續對話、閱讀與追蹤工房近況。"
+            en="Continue the conversation, reading, and follow the workshop across these platforms."
+          />
+          <SocialLinks />
         </section>
       </main>
     </>

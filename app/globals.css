@@ -133,7 +133,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .timeline-date { flex-shrink: 0; min-width: 60px; padding-top: .15rem; color: var(--muted); font-size: .68rem; }
 .timeline-title { flex: 1; font-size: .86rem; }
 .timeline-category { flex-shrink: 0; margin-left: auto; color: var(--muted); font-size: .68rem; text-align: right; }
-.site-footer { margin-top: 6rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .68rem; text-align: center; }
+.site-layout { min-height: 100vh; display: flex; flex-direction: column; }
+.site-layout > .page-shell { flex: 1; }
+.site-footer { margin-top: auto; padding: 1.6rem 0; border-top: 1px solid var(--border); color: var(--muted); font-size: .68rem; }
+.site-footer-inner { width: min(100% - 3rem, var(--content-wide)); margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+.social-links { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem; }
+.social-link { display: inline-flex; align-items: center; gap: .35rem; padding: .42rem .58rem; border: 1px solid var(--border); border-radius: 999px; color: var(--text-soft); font-size: .66rem; line-height: 1; text-decoration: none; transition: color 180ms var(--ease-out), border-color 180ms var(--ease-out), background 180ms var(--ease-out), transform 160ms var(--ease-out); }
+.social-link:hover { border-color: var(--accent); background: rgba(224, 164, 111, .08); color: var(--accent-bright); }
+.social-link:active { transform: scale(.97); }
+.about-contact { margin-top: .5rem; padding: 1.65rem 1.75rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface-soft); }
+.contact-intro { display: flex; max-width: 570px; margin: 0 0 1.2rem; color: var(--text-soft); font-size: .8rem; line-height: 1.8; }
 .article-header { max-width: 760px; margin: 5.25rem 0 3.25rem; }
 .article-meta { display: flex; flex-wrap: wrap; align-items: center; gap: .6rem; color: var(--muted); font-size: .68rem; }
 .article-title { display: flex; margin: 1rem 0; font-family: Georgia, "Noto Serif TC", serif; font-size: clamp(2rem, 5.5vw, 3.4rem); line-height: 1.18; letter-spacing: -.045em; }
@@ -187,7 +196,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .page-title { margin-top: 4rem; font-size: clamp(1.8rem, 9vw, 2.5rem); }
   .page-intro { margin-bottom: 2rem; font-size: .78rem; }
   .stack-grid { grid-template-columns: 1fr; }
-  .about-card { padding: 1.25rem; }
+  .about-card, .about-contact { padding: 1.25rem; }
+  .site-footer-inner { width: min(100% - 1.5rem, var(--content-wide)); align-items: flex-start; flex-direction: column; gap: .9rem; }
+  .social-links { gap: .35rem; }
+  .social-link { padding: .4rem .52rem; font-size: .62rem; }
   .timeline-row { gap: .55rem; }
   .timeline-category { display: none; }
   .article-header { margin-top: 4rem; }
