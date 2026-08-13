@@ -1,10 +1,10 @@
 const socialLinks = [
-  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61591256981970&locale=zh_TW" },
+  { label: "Threads", href: "https://www.threads.com/@yanzhiprotocol" },
   { label: "X", href: "https://x.com/yanzhiprotocol" },
+  { label: "Facebook", href: "https://www.facebook.com/profile.php?id=61591256981970&locale=zh_TW" },
   { label: "Substack", href: "https://substack.com/@yanzhi" },
   { label: "GitHub", href: "https://github.com/yanzhi-protocol" },
   { label: "Instagram", href: "https://www.instagram.com/yanzhiprotocol/" },
-  { label: "Threads", href: "https://www.threads.com/@yanzhiprotocol" },
 ];
 
 export default function SocialLinks({ className = "" }: { className?: string }) {
