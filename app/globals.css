@@ -431,8 +431,8 @@ iframe, video, img { max-width: 100%; }
 .language-card-check { position: absolute; top: .72rem; right: .75rem; color: var(--accent-bright); font-size: .62rem; }
 .translation-target-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem; }
 .translation-target-card { min-height: 5.1rem; padding: .85rem .9rem; }
-.translation-target-card.is-selected { border-color: #b8dcff; background: rgba(140,190,235,.14); box-shadow: 0 0 0 2px rgba(140,190,235,.08); }
-.translation-target-card.is-selected .language-card-native { color: #e7f4ff; }
+.translation-target-card.is-selected { border-color: var(--accent); background: rgba(224,164,111,.13); box-shadow: 0 0 0 2px rgba(224,164,111,.08); }
+.translation-target-card.is-selected .language-card-native { color: var(--accent-bright); }
 .translation-target-card.is-disabled { opacity: .36; cursor: not-allowed; }
 .translation-target-card.is-disabled .language-card-check { display: none; }
 .language-preferences-note { display: grid; grid-template-columns: auto 1fr; gap: .7rem; align-items: start; margin-top: 1.35rem; padding: .78rem .9rem; border-left: 3px solid var(--accent); background: rgba(32,27,23,.75); }
