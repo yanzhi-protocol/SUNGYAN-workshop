@@ -15,48 +15,59 @@ type Props = {
   id?: string;
 };
 
+function directValue(value: LocalizedValue | undefined, zh: string, en: string, language: Language) {
+  return value?.[language] ?? (language === "zh" ? zh : language === "en" ? en : "");
+}
+
 export default function BilingualText({ value, zh = "", en = "", as: Tag = "span", className = "", preserveLineBreaks = false, id }: Props) {
-  const { language } = useLanguage();
-  const original = value?.zh ?? zh;
-  const english = value?.en ?? en;
-  const directTranslation = value?.[language] ?? (language === "zh" ? original : language === "en" ? english : "");
-  const [translated, setTranslated] = useState(directTranslation);
+  const { primaryLanguage, secondaryLanguage } = useLanguage();
+  const sourceChinese = value?.zh ?? zh;
+  const sourceEnglish = value?.en ?? en;
+  const directPrimary = directValue(value, sourceChinese, sourceEnglish, primaryLanguage);
+  const directSecondary = directValue(value, sourceChinese, sourceEnglish, secondaryLanguage);
+  const [primaryText, setPrimaryText] = useState(directPrimary || sourceEnglish || sourceChinese);
+  const [secondaryText, setSecondaryText] = useState(directSecondary || sourceChinese || sourceEnglish);
   const [translating, setTranslating] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    if (directTranslation) {
-      setTranslated(directTranslation);
-      setTranslating(false);
-      return () => { cancelled = true; };
-    }
-    if (!original.trim() || language === "zh") {
-      setTranslated(original || english);
-      setTranslating(false);
-      return () => { cancelled = true; };
-    }
+    const pending: Promise<void>[] = [];
+    setPrimaryText(directPrimary || sourceEnglish || sourceChinese);
+    setSecondaryText(directSecondary || sourceChinese || sourceEnglish);
 
-    setTranslating(true);
-    setTranslated(english || original);
-    translateText(original, language, (progress) => {
-      if (!cancelled && progress.stage === "translating") setTranslating(true);
-    }).then((result) => {
-      if (!cancelled) {
-        if (result) setTranslated(result);
-        setTranslating(false);
-      }
-    }).catch(() => {
-      if (!cancelled) setTranslating(false);
-    });
-
+    if (!directPrimary && primaryLanguage !== "zh" && sourceChinese.trim()) {
+      pending.push(
+        translateText(sourceChinese, primaryLanguage, () => {
+          if (!cancelled) setTranslating(true);
+        }).then((result) => {
+          if (!cancelled && result) setPrimaryText(result);
+        }),
+      );
+    }
+    if (!directSecondary && secondaryLanguage !== "zh" && sourceChinese.trim() && secondaryLanguage !== primaryLanguage) {
+      pending.push(
+        translateText(sourceChinese, secondaryLanguage, () => {
+          if (!cancelled) setTranslating(true);
+        }).then((result) => {
+          if (!cancelled && result) setSecondaryText(result);
+        }),
+      );
+    }
+    if (pending.length) {
+      setTranslating(true);
+      Promise.all(pending).finally(() => {
+        if (!cancelled) setTranslating(false);
+      });
+    } else {
+      setTranslating(false);
+    }
     return () => { cancelled = true; };
-  }, [directTranslation, original, english, language]);
+  }, [directPrimary, directSecondary, sourceChinese, sourceEnglish, primaryLanguage, secondaryLanguage]);
 
-  const secondary = language === "zh" ? english : original;
   return (
     <Tag id={id} className={`bilingual-text ${preserveLineBreaks ? "bilingual-text--multiline" : ""} ${translating ? "bilingual-text--translating" : ""} ${className}`}>
-      <span className="bilingual-primary" aria-busy={translating}>{translated || original}</span>
-      {secondary && <span className="bilingual-secondary">{secondary}</span>}
+      <span className="bilingual-primary" aria-busy={translating}>{primaryText}</span>
+      {secondaryText && <span className="bilingual-secondary">{secondaryText}</span>}
     </Tag>
   );
 }

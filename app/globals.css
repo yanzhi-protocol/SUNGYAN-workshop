@@ -382,3 +382,26 @@ iframe, video, img { max-width: 100%; }
 .language-support-note { margin: .9rem 0 0; padding-top: .8rem; border-top: 1px solid var(--border); color: var(--muted); font-size: .62rem; line-height: 1.7; }
 [dir="rtl"] .language-option { text-align: right; }
 [dir="rtl"] .language-option-badge { right: auto; left: .45rem; }
+
+.preference-fields { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: end; gap: .65rem; }
+.preference-field { display: grid; gap: .42rem; }
+.preference-label { color: var(--accent-bright); font-size: .64rem; letter-spacing: .08em; }
+.preference-field select { width: 100%; min-height: 3rem; padding: .7rem .75rem; border: 1px solid var(--border); border-radius: 11px; background: rgba(20,17,14,.72); color: var(--text); font: inherit; font-size: .72rem; cursor: pointer; }
+.preference-field select:focus-visible { border-color: var(--accent); outline: 2px solid rgba(224,164,111,.18); outline-offset: 2px; }
+.preference-field small { min-height: 1em; color: var(--muted); font-size: .58rem; }
+.preference-swap { width: 2.1rem; height: 2.1rem; margin-bottom: 1.35rem; border: 1px solid var(--border-strong); border-radius: 50%; background: transparent; color: var(--accent); font-size: 1.1rem; cursor: pointer; transition: background 180ms var(--ease-out), color 180ms var(--ease-out), transform 160ms var(--ease-out); }
+.preference-swap:hover { background: rgba(224,164,111,.12); color: var(--accent-bright); }
+.preference-swap:active { transform: scale(.92); }
+.preference-summary { display: flex; align-items: center; justify-content: center; gap: .6rem; margin-top: 1rem; color: var(--text-soft); font-size: .7rem; }
+.preference-summary span:nth-child(2) { color: var(--accent); }
+.language-default { padding: .7rem .9rem; border: 1px solid var(--border); border-radius: 999px; background: transparent; color: var(--text-soft); font: inherit; font-size: .68rem; cursor: pointer; }
+.language-default:hover { border-color: var(--accent); color: var(--accent-bright); }
+
+@media (max-width: 560px) {
+  .preference-fields { grid-template-columns: 1fr; gap: .8rem; }
+  .preference-swap { margin: 0 auto; transform: rotate(90deg); }
+  .preference-swap:active { transform: rotate(90deg) scale(.92); }
+  .preference-summary { margin-top: .8rem; }
+  .language-welcome-actions { flex-direction: column-reverse; }
+  .language-default, .language-confirm { width: 100%; text-align: center; }
+}

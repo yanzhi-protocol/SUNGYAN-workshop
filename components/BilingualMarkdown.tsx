@@ -24,40 +24,54 @@ function MarkdownContent({ content }: { content: string }) {
 }
 
 export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }) {
-  const { language } = useLanguage();
-  const [translated, setTranslated] = useState(language === "zh" ? zh : en);
+  const { primaryLanguage, secondaryLanguage } = useLanguage();
+  const [primaryText, setPrimaryText] = useState(primaryLanguage === "zh" ? zh : en || zh);
+  const [secondaryText, setSecondaryText] = useState(secondaryLanguage === "zh" ? zh : en || zh);
   const [translating, setTranslating] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    if (language === "zh") {
-      setTranslated(zh);
-      setTranslating(false);
-      return () => { cancelled = true; };
-    }
-    setTranslated(en || zh);
-    setTranslating(true);
-    translateMarkdown(zh, language, (progress) => {
-      if (!cancelled) setTranslating(progress.stage === "downloading" || progress.stage === "translating");
-    }).then((result) => {
-      if (!cancelled) {
-        if (result) setTranslated(result);
-        setTranslating(false);
+    const tasks: Promise<void>[] = [];
+    const translateFor = (language: typeof primaryLanguage, setter: (value: string) => void) => {
+      if (language === "zh") {
+        setter(zh);
+        return;
       }
-    }).catch(() => {
-      if (!cancelled) setTranslating(false);
-    });
+      if (language === "en") {
+        setter(en || zh);
+        return;
+      }
+      setter(en || zh);
+      tasks.push(
+        translateMarkdown(zh, language, () => {
+          if (!cancelled) setTranslating(true);
+        }).then((result) => {
+          if (!cancelled && result) setter(result);
+        }),
+      );
+    };
+
+    translateFor(primaryLanguage, setPrimaryText);
+    translateFor(secondaryLanguage, setSecondaryText);
+    if (tasks.length) {
+      setTranslating(true);
+      Promise.all(tasks).finally(() => {
+        if (!cancelled) setTranslating(false);
+      });
+    } else {
+      setTranslating(false);
+    }
     return () => { cancelled = true; };
-  }, [zh, en, language]);
+  }, [zh, en, primaryLanguage, secondaryLanguage]);
 
   return (
     <div className={`bilingual-markdown ${translating ? "bilingual-markdown--translating" : ""}`}>
       <div className="markdown-primary" aria-busy={translating}>
         {translating && <div className="translation-status" aria-live="polite">Translating locally…</div>}
-        <MarkdownContent content={translated} />
+        <MarkdownContent content={primaryText} />
       </div>
       <div className="markdown-secondary">
-        <MarkdownContent content={language === "zh" ? en : zh} />
+        <MarkdownContent content={secondaryText} />
       </div>
     </div>
   );

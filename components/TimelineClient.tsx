@@ -5,9 +5,11 @@ import Link from "next/link";
 import type { PostMeta } from "@/lib/posts";
 import BilingualText from "./BilingualText";
 import { useLanguage } from "./LanguageProvider";
+import { languageOption } from "@/lib/i18n";
 
-const MONTH_NAMES = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-const MONTH_NAMES_EN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+function formatMonth(year: string, monthIndex: number, language: Parameters<typeof languageOption>[0]) {
+  return new Intl.DateTimeFormat(languageOption(language).locale, { year: "numeric", month: "long" }).format(new Date(Number(year), monthIndex, 1));
+}
 
 interface Props {
   groups: Record<string, PostMeta[]>;
@@ -16,7 +18,7 @@ interface Props {
 
 export default function TimelineClient({ groups, sortedKeys }: Props) {
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const { language } = useLanguage();
+  const { primaryLanguage, secondaryLanguage } = useLanguage();
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -51,8 +53,8 @@ export default function TimelineClient({ groups, sortedKeys }: Props) {
           >
             <h2 className="timeline-heading">
               <span className="bilingual-text bilingual-text--compact">
-                <span className="bilingual-primary">{language === "zh" ? `${year} 年 ${MONTH_NAMES[monthIndex]}` : `${year} ${MONTH_NAMES_EN[monthIndex]}`}</span>
-                <span className="bilingual-secondary">{language === "zh" ? `${year} ${MONTH_NAMES_EN[monthIndex]}` : `${year} 年 ${MONTH_NAMES[monthIndex]}`}</span>
+                <span className="bilingual-primary">{formatMonth(year, monthIndex, primaryLanguage)}</span>
+                <span className="bilingual-secondary">{formatMonth(year, monthIndex, secondaryLanguage)}</span>
               </span>
             </h2>
             <div className="timeline-list">

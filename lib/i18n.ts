@@ -14,6 +14,7 @@ export const LANGUAGE_OPTIONS = [
 
 export type Language = (typeof LANGUAGE_OPTIONS)[number]["code"];
 export const LANGUAGE_STORAGE_KEY = "sungyan-language";
+export const LANGUAGE_PREFERENCES_STORAGE_KEY = "sungyan-language-preferences";
 
 export type LocalizedValue = {
   zh: string;
@@ -75,6 +76,11 @@ export const UI = {
     suggested: text("建議", "Suggested", { ja: "おすすめ", ko: "추천", es: "Sugerido", fr: "Suggéré", de: "Vorgeschlagen", pt: "Sugerido", ar: "مقترحة", hi: "सुझाई गई", it: "Suggerita" }),
     original: text("原文", "Original", { ja: "原文", ko: "원문", es: "Original", fr: "Original", de: "Original", pt: "Original", ar: "الأصل", hi: "मूल", it: "Originale" }),
     openLanguage: text("切換語言", "Change language", { ja: "言語を変更", ko: "언어 변경", es: "Cambiar idioma", fr: "Changer de langue", de: "Sprache ändern", pt: "Mudar idioma", ar: "تغيير اللغة", hi: "भाषा बदलें", it: "Cambia lingua" }),
+    primaryLanguage: text("主語言", "Primary language", { ja: "主言語", ko: "기본 언어", es: "Idioma principal", fr: "Langue principale", de: "Hauptsprache", pt: "Idioma principal", ar: "اللغة الأساسية", hi: "मुख्य भाषा", it: "Lingua principale" }),
+    secondaryLanguage: text("附屬語言", "Secondary language", { ja: "副言語", ko: "보조 언어", es: "Idioma secundario", fr: "Langue secondaire", de: "Zweitsprache", pt: "Idioma secundário", ar: "اللغة الثانوية", hi: "द्वितीयक भाषा", it: "Lingua secondaria" }),
+    swapLanguages: text("互換主次語言", "Swap languages", { ja: "主言語と副言語を入れ替える", ko: "언어 순서 바꾸기", es: "Intercambiar idiomas", fr: "Inverser les langues", de: "Sprachen tauschen", pt: "Trocar idiomas", ar: "تبديل اللغات", hi: "भाषाएँ बदलें", it: "Inverti lingue" }),
+    restoreDefault: text("恢復預設", "Use default", { ja: "デフォルトに戻す", ko: "기본값으로 복원", es: "Usar predeterminado", fr: "Réinitialiser", de: "Standard wiederherstellen", pt: "Usar predefinição", ar: "استخدام الإعداد الافتراضي", hi: "डिफ़ॉल्ट उपयोग करें", it: "Usa predefinito" }),
+    savePreferences: text("儲存語言偏好", "Save language settings", { ja: "言語設定を保存", ko: "언어 설정 저장", es: "Guardar configuración", fr: "Enregistrer les réglages", de: "Spracheinstellungen speichern", pt: "Guardar definições", ar: "حفظ إعدادات اللغة", hi: "भाषा सेटिंग सहेजें", it: "Salva impostazioni" }),
   },
   pages: {
     logs: {
