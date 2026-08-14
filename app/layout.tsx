@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
             <footer className="site-footer">
               <div className="site-footer-inner">
-                <BilingualText zh={UI.home.footer.zh} en={UI.home.footer.en} /> · {new Date().getFullYear()}
+                <BilingualText value={UI.home.footer} /> · {new Date().getFullYear()}
                 <SocialLinks />
               </div>
             </footer>

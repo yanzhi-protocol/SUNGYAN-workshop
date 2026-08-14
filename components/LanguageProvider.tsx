@@ -2,40 +2,65 @@
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Language } from "@/lib/i18n";
-import { LANGUAGE_STORAGE_KEY } from "@/lib/i18n";
+import { detectBrowserLanguage, LANGUAGE_OPTIONS, LANGUAGE_STORAGE_KEY } from "@/lib/i18n";
+import LanguageWelcome from "./LanguageWelcome";
 
 type LanguageContextValue = {
   language: Language;
-  setLanguage: (language: Language) => void;
-  toggleLanguage: () => void;
+  hasChosenLanguage: boolean;
+  setLanguage: (language: Language, remember?: boolean) => void;
+  openLanguagePicker: () => void;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export default function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<Language>("zh");
+  const [hasChosenLanguage, setHasChosenLanguage] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
-    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (stored === "zh" || stored === "en") setLanguageState(stored);
+    const stored = window.localStorage.getItem(LANGUAGE_STORAGE_KEY) as Language | null;
+    const supported = LANGUAGE_OPTIONS.some((option) => option.code === stored);
+    if (supported && stored) {
+      setLanguageState(stored);
+      document.documentElement.lang = LANGUAGE_OPTIONS.find((option) => option.code === stored)?.locale ?? stored;
+      document.documentElement.dir = stored === "ar" ? "rtl" : "ltr";
+      setHasChosenLanguage(true);
+    } else {
+      setLanguageState(detectBrowserLanguage(window.navigator.language));
+    }
+    setReady(true);
   }, []);
 
-  const setLanguage = (next: Language) => {
+  const setLanguage = (next: Language, remember = true) => {
     setLanguageState(next);
-    window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
-    document.documentElement.lang = next === "zh" ? "zh-TW" : "en";
+    document.documentElement.lang = LANGUAGE_OPTIONS.find((option) => option.code === next)?.locale ?? next;
+    document.documentElement.dir = next === "ar" ? "rtl" : "ltr";
+    if (remember) {
+      window.localStorage.setItem(LANGUAGE_STORAGE_KEY, next);
+      setHasChosenLanguage(true);
+      setPickerOpen(false);
+    }
   };
 
   const value = useMemo(
     () => ({
       language,
+      hasChosenLanguage,
       setLanguage,
-      toggleLanguage: () => setLanguage(language === "zh" ? "en" : "zh"),
+      openLanguagePicker: () => setPickerOpen(true),
     }),
-    [language],
+    [language, hasChosenLanguage],
   );
 
-  return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
+  return (
+    <LanguageContext.Provider value={value}>
+      {children}
+      {ready && (!hasChosenLanguage || pickerOpen) && <LanguageWelcome onClose={() => setPickerOpen(false)} />}
+    </LanguageContext.Provider>
+  );
 }
 
 export function useLanguage() {

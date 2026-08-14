@@ -17,22 +17,21 @@ export default function AboutPage() {
     <>
       <Nav />
       <main className="page-shell page-narrow about-page">
-        <BilingualText as="h1" className="page-title" zh={UI.pages.about.title.zh} en={UI.pages.about.title.en} />
+        <BilingualText as="h1" className="page-title" value={UI.pages.about.title} />
 
         <section className="about-copy">
           {UI.pages.about.paragraphs.map((paragraph) => (
             <BilingualText
               key={paragraph.zh}
               as="p"
-              zh={paragraph.zh}
-              en={paragraph.en}
+              value={paragraph}
               preserveLineBreaks
             />
           ))}
         </section>
 
         <section className="about-card">
-          <BilingualText as="h2" className="small-section-title" zh={UI.pages.about.stack.zh} en={UI.pages.about.stack.en} />
+          <BilingualText as="h2" className="small-section-title" value={UI.pages.about.stack} />
           <div className="stack-grid">
             {stack.map(([zh, en, value]) => (
               <div key={zh} className="stack-row">
@@ -44,7 +43,7 @@ export default function AboutPage() {
         </section>
 
         <section className="about-contact">
-          <BilingualText as="h2" className="small-section-title" zh={UI.pages.about.contact.zh} en={UI.pages.about.contact.en} />
+          <BilingualText as="h2" className="small-section-title" value={UI.pages.about.contact} />
           <BilingualText
             as="p"
             className="contact-intro"
