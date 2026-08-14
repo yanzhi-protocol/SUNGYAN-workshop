@@ -11,11 +11,12 @@ const CATEGORY_COLORS: Record<string, string> = {
   "震驚日誌": "#b47791",
 };
 
-export default function LogCard({ post }: { post: PostMeta }) {
+export default function LogCard({ post, index = 0 }: { post: PostMeta; index?: number }) {
   const color = CATEGORY_COLORS[post.category] ?? "#8d8275";
 
   return (
     <article className="log-card">
+      <span className="log-card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
       <div className="log-meta">
         <span aria-hidden="true" style={{ width: 6, height: 6, borderRadius: "50%", background: color, flexShrink: 0 }} />
         <BilingualText zh={post.category} en={post.category_en} />

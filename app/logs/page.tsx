@@ -22,9 +22,23 @@ export default function LogsPage() {
           en={UI.pages.logs.summary.en.replace("{count}", String(posts.length)).replace("{categories}", categoriesEn)}
         />
 
+        <div className="archive-overview" aria-label="檔案庫摘要 / Archive overview">
+          <div><span>RECORDS / 記錄</span><strong>{posts.length.toString().padStart(2, "0")}</strong></div>
+          <div><span>STREAMS / 類別</span><strong>{categories.length.toString().padStart(2, "0")}</strong></div>
+          <div><span>UPDATED / 更新</span><strong>{posts[0]?.date.split("T")[0] ?? "—"}</strong></div>
+        </div>
+        <div className="category-strip" aria-label="文章分類 / Article categories">
+          {categories.map((category) => (
+            <span className="category-chip" key={category}>
+              <span className="category-chip-dot" aria-hidden="true" />
+              <BilingualText zh={category} en={categoryEnglish(category)} />
+            </span>
+          ))}
+        </div>
+
         <div className="log-list">
-          {posts.map((post) => (
-            <LogCard key={post.slug} post={post} />
+          {posts.map((post, index) => (
+            <LogCard key={post.slug} post={post} index={index} />
           ))}
         </div>
       </main>
