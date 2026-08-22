@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import type { Language } from "@/lib/i18n";
 import { useLanguage } from "./LanguageProvider";
 import { translateMarkdown } from "@/lib/liveTranslation";
 
@@ -23,56 +24,89 @@ function MarkdownContent({ content }: { content: string }) {
   );
 }
 
+function directText(language: Language, zh: string, en: string) {
+  if (language === "zh") return zh;
+  if (language === "en") return en || zh;
+  return "";
+}
+
+function fallbackText(language: Language, zh: string, en: string) {
+  return language === "zh" ? zh : en || zh;
+}
+
 export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }) {
   const { primaryLanguage, secondaryLanguage } = useLanguage();
-  const [primaryText, setPrimaryText] = useState(primaryLanguage === "zh" ? zh : en || zh);
-  const [secondaryText, setSecondaryText] = useState(secondaryLanguage === "zh" ? zh : en || zh);
+  const [primaryText, setPrimaryText] = useState(directText(primaryLanguage, zh, en));
+  const [secondaryText, setSecondaryText] = useState(directText(secondaryLanguage, zh, en));
   const [translating, setTranslating] = useState(false);
+  const [translationFailed, setTranslationFailed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     const tasks: Promise<void>[] = [];
-    const translateFor = (language: typeof primaryLanguage, setter: (value: string) => void) => {
-      if (language === "zh") {
-        setter(zh);
+    let hadFailure = false;
+
+    setTranslationFailed(false);
+
+    const translateFor = (language: Language, setter: (value: string) => void) => {
+      const direct = directText(language, zh, en);
+      if (direct) {
+        setter(direct);
         return;
       }
-      if (language === "en") {
-        setter(en || zh);
-        return;
-      }
-      setter(en || zh);
+
+      setter("");
       tasks.push(
-        translateMarkdown(zh, language, () => {
-          if (!cancelled) setTranslating(true);
-        }).then((result) => {
-          if (!cancelled && result) setter(result);
-        }),
+        translateMarkdown(zh, language)
+          .then((result) => {
+            if (cancelled) return;
+            if (result) {
+              setter(result);
+            } else {
+              hadFailure = true;
+              setter(fallbackText(language, zh, en));
+            }
+          })
+          .catch(() => {
+            if (cancelled) return;
+            hadFailure = true;
+            setter(fallbackText(language, zh, en));
+          }),
       );
     };
 
     translateFor(primaryLanguage, setPrimaryText);
     translateFor(secondaryLanguage, setSecondaryText);
+
     if (tasks.length) {
       setTranslating(true);
       Promise.all(tasks).finally(() => {
-        if (!cancelled) setTranslating(false);
+        if (!cancelled) {
+          setTranslating(false);
+          setTranslationFailed(hadFailure);
+        }
       });
     } else {
       setTranslating(false);
     }
+
     return () => { cancelled = true; };
   }, [zh, en, primaryLanguage, secondaryLanguage]);
 
   return (
     <div className={`bilingual-markdown ${translating ? "bilingual-markdown--translating" : ""}`}>
       <div className="markdown-primary" aria-busy={translating}>
-        {translating && <div className="translation-status" aria-live="polite">Translating locally…</div>}
-        <MarkdownContent content={primaryText} />
+        {translating && <div className="translation-status" aria-live="polite">Translating locally… / 本機翻譯中…</div>}
+        {!translating && translationFailed && (
+          <div className="translation-status translation-status--fallback" aria-live="polite">Local translation unavailable · fallback shown / 本機翻譯不可用，已顯示回退內容</div>
+        )}
+        {primaryText && <MarkdownContent content={primaryText} />}
       </div>
-      <div className="markdown-secondary">
-        <MarkdownContent content={secondaryText} />
-      </div>
+      {secondaryText && (
+        <div className="markdown-secondary">
+          <MarkdownContent content={secondaryText} />
+        </div>
+      )}
     </div>
   );
 }

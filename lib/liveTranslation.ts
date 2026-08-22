@@ -145,6 +145,7 @@ export async function translateMarkdown(text: string, target: Language, onProgre
   if (!supportsNativeTranslation()) return null;
   const blocks = text.split(/(\n\s*\n)/g);
   const translatedBlocks: string[] = [];
+  let failed = false;
   for (const block of blocks) {
     if (!block.trim() || /^\s*$/.test(block)) {
       translatedBlocks.push(block);
@@ -152,7 +153,8 @@ export async function translateMarkdown(text: string, target: Language, onProgre
     }
     const { masked, protectedParts } = protectedMarkdownParts(block);
     const translated = await translateText(masked, target, onProgress);
+    if (!translated) failed = true;
     translatedBlocks.push(translated ? restoreMarkdownParts(translated, protectedParts) : block);
   }
-  return translatedBlocks.join("");
+  return failed ? null : translatedBlocks.join("");
 }
