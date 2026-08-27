@@ -565,3 +565,52 @@ iframe, video, img { max-width: 100%; }
   .hero-copy .bilingual-primary { font-size: .84rem; line-height: 1.78; }
   .hero-copy .bilingual-secondary { font-size: .64rem; line-height: 1.7; }
 }
+
+/* Latest updates feed */
+.updates-page .page-title { margin-bottom: .8rem; }
+.updates-overview { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin: 2rem 0 1.15rem; }
+.updates-overview > div { display: grid; gap: .16rem; padding: .85rem .95rem; border: 1px solid var(--border); border-radius: 12px; background: rgba(42,35,30,.48); }
+.updates-overview span { color: var(--muted); font-size: .57rem; letter-spacing: .1em; }
+.updates-overview strong { display: inline-flex; align-items: baseline; gap: .35rem; color: var(--text-soft); font-size: .78rem; font-weight: 500; }
+.updates-overview strong .bilingual-text { flex-direction: row; align-items: baseline; gap: .2rem; }
+.updates-overview strong .bilingual-secondary { margin-top: 0; }
+.updates-upload-note { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.25rem; margin: 0 0 2.6rem; padding: 1rem 1.1rem; border: 1px solid var(--border-strong); border-radius: 14px; background: linear-gradient(135deg, rgba(63,45,33,.58), rgba(31,26,22,.72)); }
+.updates-upload-note .small-section-title { margin-bottom: .35rem; color: var(--accent); }
+.updates-upload-note p { margin: 0; color: var(--text-soft); font-size: .7rem; line-height: 1.65; }
+.updates-upload-note code { padding: .08rem .35rem; border: 1px solid var(--border); border-radius: 5px; color: var(--accent-bright); font-size: .92em; }
+.updates-upload-note-copy { margin-top: .2rem !important; color: var(--muted) !important; }
+.updates-upload-link { flex-shrink: 0; padding: .48rem .68rem; border: 1px solid var(--border-strong); border-radius: 999px; color: var(--accent-bright); font-size: .66rem; text-decoration: none; transition: border-color 180ms var(--ease-out), background 180ms var(--ease-out), transform 160ms var(--ease-out); }
+.updates-upload-link:hover { border-color: var(--accent); background: rgba(224,164,111,.09); }
+.updates-upload-link:active { transform: scale(.97); }
+.updates-feed { display: grid; gap: 2.4rem; max-width: 690px; margin: 0 auto; }
+.update-card { overflow: hidden; border: 1px solid var(--border); border-radius: 18px; background: linear-gradient(150deg, rgba(42,35,30,.94), rgba(25,21,18,.98)); box-shadow: 0 12px 34px rgba(0,0,0,.14); }
+.update-card-meta { display: flex; align-items: center; gap: .55rem; padding: .85rem 1rem; color: var(--muted); font-size: .62rem; letter-spacing: .06em; }
+.update-card-meta time { margin-left: auto; letter-spacing: .03em; }
+.update-card-index { color: var(--accent-bright); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.update-card-kind { padding-left: .55rem; border-left: 1px solid var(--border-strong); color: var(--accent); font-size: .55rem; }
+.update-media { overflow: hidden; aspect-ratio: 4 / 5; background: #0b0908; }
+.update-media img, .update-media video { display: block; width: 100%; height: 100%; }
+.update-media img { object-fit: cover; }
+.update-media video { object-fit: contain; }
+.update-card-caption { display: flex; align-items: flex-start; gap: .55rem; padding: .95rem 1rem 1.1rem; color: var(--text-soft); font-family: Georgia, "Noto Serif TC", serif; font-size: 1.02rem; line-height: 1.45; }
+.update-caption-mark { flex-shrink: 0; color: var(--accent); font-family: inherit; }
+.updates-empty { margin: 1rem 0 4rem; padding: 1.4rem 1.1rem; border: 1px dashed var(--border-strong); border-radius: 14px; color: var(--muted); font-size: .78rem; line-height: 1.8; }
+.updates-empty .bilingual-secondary { max-width: 560px; }
+
+@media (max-width: 700px) {
+  .updates-upload-note { align-items: flex-start; flex-direction: column; }
+  .updates-upload-link { align-self: stretch; text-align: center; }
+}
+
+@media (max-width: 560px) {
+  .updates-overview { gap: .45rem; margin-top: 1.6rem; }
+  .updates-overview > div { padding: .65rem .6rem; }
+  .updates-overview span { font-size: .49rem; letter-spacing: .03em; }
+  .updates-overview strong { font-size: .66rem; }
+  .updates-upload-note { margin-bottom: 2rem; padding: .85rem .8rem; }
+  .updates-upload-note p { font-size: .62rem; }
+  .updates-feed { gap: 1.6rem; }
+  .update-card { border-radius: 14px; }
+  .update-card-meta { padding: .72rem .78rem; font-size: .55rem; }
+  .update-card-caption { padding: .8rem .78rem .9rem; font-size: .92rem; }
+}

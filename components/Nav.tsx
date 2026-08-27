@@ -8,6 +8,7 @@ import LanguageSelect from "./LanguageSelect";
 
 const links = [
   { href: "/logs", ...UI.nav.logs },
+  { href: "/updates", ...UI.nav.updates },
   { href: "/timeline", ...UI.nav.timeline },
   { href: "/about", ...UI.nav.about },
 ];
