@@ -510,8 +510,11 @@ iframe, video, img { max-width: 100%; }
 }
 
 @media (max-width: 560px) {
-  .site-nav-inner { min-height: 68px; }
-  .nav-links { gap: .18rem; padding: .18rem .25rem; }
+  .site-nav-inner { width: min(100% - 1.25rem, 1120px); min-height: 68px; gap: .45rem; }
+  .brand { flex-shrink: 0; gap: .45rem; font-size: .88rem; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 11px; }
+  .site-nav .bilingual-secondary { display: none; }
+  .nav-links { flex-shrink: 0; gap: .18rem; padding: .18rem .25rem; }
   .nav-link { padding-inline: .32rem; }
   .language-toggle { padding-inline: .42rem; }
   .language-toggle-caption { display: none; }
