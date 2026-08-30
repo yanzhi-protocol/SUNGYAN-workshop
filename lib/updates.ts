@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 
 const updatesDirectory = path.join(process.cwd(), "public/updates");
+const updatesRepository = "yanzhi-protocol/SUNGYAN-workshop";
+const updatesReference = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA || "main";
 
 const IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
 const VIDEO_EXTENSIONS = new Set([".mp4", ".webm", ".mov"]);
@@ -76,9 +78,14 @@ function toUpdate(fileName: string): UpdateItem | null {
   const fileStats = fs.statSync(filePath);
   const publishedAt = parsed?.timestamp ?? fileStats.mtimeMs;
 
+  const encodedFileName = encodeURIComponent(fileName);
+  const src = kind === "video"
+    ? `https://cdn.jsdelivr.net/gh/${updatesRepository}@${updatesReference}/public/updates/${encodedFileName}`
+    : `/updates/${encodedFileName}`;
+
   return {
     fileName,
-    src: `/updates/${encodeURIComponent(fileName)}`,
+    src,
     kind,
     caption: captionFrom(stem, parsed),
     publishedAt,
