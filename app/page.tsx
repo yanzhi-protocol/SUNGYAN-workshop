@@ -2,6 +2,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import TypewriterTitle from "@/components/TypewriterTitle";
 import BilingualText from "@/components/BilingualText";
+import Greeting from "@/components/Greeting";
 import LogCard from "@/components/LogCard";
 import { getAllPosts } from "@/lib/posts";
 import { UI } from "@/lib/i18n";
@@ -18,6 +19,7 @@ export default function Home() {
         <section className="hero">
           <div className="hero-main">
             <BilingualText as="p" className="eyebrow" value={UI.home.eyebrow} />
+            <Greeting />
             <TypewriterTitle />
             <BilingualText
               as="p"

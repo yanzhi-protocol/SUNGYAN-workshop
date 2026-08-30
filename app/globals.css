@@ -569,6 +569,17 @@ iframe, video, img { max-width: 100%; }
   .hero-copy .bilingual-secondary { font-size: .64rem; line-height: 1.7; }
 }
 
+/* Time-based background themes */
+html[data-time="morning"] { --bg: #231d1a; --bg-deep: #1a1614; }
+html[data-time="afternoon"] { --bg: #171411; --bg-deep: #0f0d0b; }
+html[data-time="evening"] { --bg: #151210; --bg-deep: #0c0a09; }
+html[data-time="night"] { --bg: #0d0b0a; --bg-deep: #050404; }
+
+/* Greeting component */
+.greeting-box { margin-bottom: 1.8rem; padding-left: 0.1rem; }
+.greeting-content .bilingual-primary { color: var(--accent); font-size: 0.98rem; font-weight: 500; letter-spacing: 0.01em; }
+.greeting-content .bilingual-secondary { color: var(--muted); font-size: 0.76rem; margin-top: 0.35rem; max-width: 520px; line-height: 1.5; }
+
 /* Latest updates feed */
 .updates-page .page-title { margin-bottom: .8rem; }
 .updates-overview { display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem; margin: 2rem 0 1.15rem; }
