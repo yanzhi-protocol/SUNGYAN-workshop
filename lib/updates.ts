@@ -93,7 +93,10 @@ export function getAllUpdates(): UpdateItem[] {
     .readdirSync(updatesDirectory)
     .map(toUpdate)
     .filter((item): item is UpdateItem => Boolean(item))
-    .sort((a, b) => b.publishedAt - a.publishedAt || b.fileName.localeCompare(a.fileName));
+    .sort((a, b) => {
+      const videoPriority = Number(b.kind === "video") - Number(a.kind === "video");
+      return videoPriority || b.publishedAt - a.publishedAt || b.fileName.localeCompare(a.fileName);
+    });
 }
 
 export function getUpdateCounts(updates: UpdateItem[]) {
