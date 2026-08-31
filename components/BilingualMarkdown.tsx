@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Language } from "@/lib/i18n";
 import { useLanguage } from "./LanguageProvider";
-import { translateMarkdown } from "@/lib/liveTranslation";
+import { prepareNativeTranslation, translateMarkdown } from "@/lib/liveTranslation";
 
 function MarkdownContent({ content }: { content: string }) {
   return (
@@ -94,6 +94,16 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
     }
   }, [en, primaryLanguage, secondaryLanguage, zh]);
 
+  const retryTranslation = useCallback(() => {
+    if (primaryLanguage !== "zh" && primaryLanguage !== "en") {
+      void prepareNativeTranslation(primaryLanguage);
+    }
+    if (secondaryLanguage !== "zh" && secondaryLanguage !== "en") {
+      void prepareNativeTranslation(secondaryLanguage);
+    }
+    runTranslation();
+  }, [primaryLanguage, runTranslation, secondaryLanguage]);
+
   useEffect(() => {
     runTranslation();
     return () => {
@@ -110,7 +120,7 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
         {!translating && translationFailed && (
           <div className="translation-status translation-status--fallback" aria-live="polite">
             <span>Local translation unavailable · fallback shown / 本機翻譯不可用，已顯示回退內容</span>
-            <button className="translation-retry" type="button" onClick={runTranslation}>
+            <button className="translation-retry" type="button" onClick={retryTranslation}>
               Retry / 重試
             </button>
           </div>

@@ -70,6 +70,36 @@ function writePersistentCache(key: string, value: string) {
   }
 }
 
+export function prepareNativeTranslation(target: Language, onProgress?: (progress: TranslationProgress) => void): Promise<NativeTranslator | null> {
+  const api = browserTranslator();
+  if (!api || target === "zh") return Promise.resolve(null);
+  const key = `zh-Hant>${target}`;
+  const cached = translatorCache.get(key);
+  if (cached) return cached;
+
+  try {
+    // Keep api.create() in the synchronous click call stack. Chrome requires
+    // a user gesture when the language model still needs to be downloaded.
+    const created = api.create({
+      sourceLanguage: BCP47_CODES.zh,
+      targetLanguage: BCP47_CODES[target],
+      monitor: (monitor) => {
+        monitor.addEventListener("downloadprogress", (event) => {
+          const progressEvent = event as Event & { loaded?: number; total?: number };
+          onProgress?.({ stage: "downloading", loaded: progressEvent.loaded, total: progressEvent.total });
+        });
+      },
+    }).catch(() => {
+      translatorCache.delete(key);
+      return null;
+    });
+    translatorCache.set(key, created);
+    return created;
+  } catch {
+    return Promise.resolve(null);
+  }
+}
+
 async function getNativeTranslator(target: Language, onProgress?: (progress: TranslationProgress) => void) {
   const api = browserTranslator();
   if (!api || target === "zh") return null;
