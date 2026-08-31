@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { Language } from "@/lib/i18n";
@@ -40,14 +40,17 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
   const [secondaryText, setSecondaryText] = useState(directText(secondaryLanguage, zh, en));
   const [translating, setTranslating] = useState(false);
   const [translationFailed, setTranslationFailed] = useState(false);
+  const translationRun = useRef(0);
 
-  useEffect(() => {
-    let cancelled = false;
+  const runTranslation = useCallback(() => {
+    const runId = translationRun.current + 1;
+    translationRun.current = runId;
     const tasks: Promise<void>[] = [];
     let hadFailure = false;
 
     setTranslationFailed(false);
 
+    const isCurrentRun = () => translationRun.current === runId;
     const translateFor = (language: Language, setter: (value: string) => void) => {
       const direct = directText(language, zh, en);
       if (direct) {
@@ -59,7 +62,7 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
       tasks.push(
         translateMarkdown(zh, language)
           .then((result) => {
-            if (cancelled) return;
+            if (!isCurrentRun()) return;
             if (result) {
               setter(result);
             } else {
@@ -68,7 +71,7 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
             }
           })
           .catch(() => {
-            if (cancelled) return;
+            if (!isCurrentRun()) return;
             hadFailure = true;
             setter(fallbackText(language, zh, en));
           }),
@@ -81,7 +84,7 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
     if (tasks.length) {
       setTranslating(true);
       Promise.all(tasks).finally(() => {
-        if (!cancelled) {
+        if (isCurrentRun()) {
           setTranslating(false);
           setTranslationFailed(hadFailure);
         }
@@ -89,9 +92,14 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
     } else {
       setTranslating(false);
     }
+  }, [en, primaryLanguage, secondaryLanguage, zh]);
 
-    return () => { cancelled = true; };
-  }, [zh, en, primaryLanguage, secondaryLanguage]);
+  useEffect(() => {
+    runTranslation();
+    return () => {
+      translationRun.current += 1;
+    };
+  }, [runTranslation]);
 
   const hasDistinctSecondary = Boolean(secondaryText.trim() && secondaryText.trim() !== primaryText.trim());
 
@@ -100,7 +108,12 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
       <div className="markdown-primary" aria-busy={translating}>
         {translating && <div className="translation-status" aria-live="polite">Translating locally… / 本機翻譯中…</div>}
         {!translating && translationFailed && (
-          <div className="translation-status translation-status--fallback" aria-live="polite">Local translation unavailable · fallback shown / 本機翻譯不可用，已顯示回退內容</div>
+          <div className="translation-status translation-status--fallback" aria-live="polite">
+            <span>Local translation unavailable · fallback shown / 本機翻譯不可用，已顯示回退內容</span>
+            <button className="translation-retry" type="button" onClick={runTranslation}>
+              Retry / 重試
+            </button>
+          </div>
         )}
         {primaryText && <MarkdownContent content={primaryText} />}
       </div>
