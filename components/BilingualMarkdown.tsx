@@ -93,6 +93,8 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
     return () => { cancelled = true; };
   }, [zh, en, primaryLanguage, secondaryLanguage]);
 
+  const hasDistinctSecondary = Boolean(secondaryText.trim() && secondaryText.trim() !== primaryText.trim());
+
   return (
     <div className={`bilingual-markdown ${translating ? "bilingual-markdown--translating" : ""}`}>
       <div className="markdown-primary" aria-busy={translating}>
@@ -102,7 +104,7 @@ export default function BilingualMarkdown({ zh, en }: { zh: string; en: string }
         )}
         {primaryText && <MarkdownContent content={primaryText} />}
       </div>
-      {secondaryText && (
+      {hasDistinctSecondary && (
         <div className="markdown-secondary">
           <MarkdownContent content={secondaryText} />
         </div>
