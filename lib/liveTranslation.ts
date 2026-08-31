@@ -78,20 +78,28 @@ async function getNativeTranslator(target: Language, onProgress?: (progress: Tra
   if (cached) return cached;
 
   const created = (async () => {
-    onProgress?.({ stage: "checking" });
-    const availability = await api.availability({ sourceLanguage: BCP47_CODES.zh, targetLanguage: BCP47_CODES[target] });
-    if (availability === "unavailable") return null;
-    onProgress?.({ stage: availability === "downloadable" ? "downloading" : "translating" });
-    return api.create({
-      sourceLanguage: BCP47_CODES.zh,
-      targetLanguage: BCP47_CODES[target],
-      monitor: (monitor) => {
-        monitor.addEventListener("downloadprogress", (event) => {
-          const progressEvent = event as Event & { loaded?: number; total?: number };
-          onProgress?.({ stage: "downloading", loaded: progressEvent.loaded, total: progressEvent.total });
-        });
-      },
-    });
+    try {
+      onProgress?.({ stage: "checking" });
+      const availability = await api.availability({ sourceLanguage: BCP47_CODES.zh, targetLanguage: BCP47_CODES[target] });
+      if (availability === "unavailable") {
+        translatorCache.delete(key);
+        return null;
+      }
+      onProgress?.({ stage: availability === "downloadable" ? "downloading" : "translating" });
+      return await api.create({
+        sourceLanguage: BCP47_CODES.zh,
+        targetLanguage: BCP47_CODES[target],
+        monitor: (monitor) => {
+          monitor.addEventListener("downloadprogress", (event) => {
+            const progressEvent = event as Event & { loaded?: number; total?: number };
+            onProgress?.({ stage: "downloading", loaded: progressEvent.loaded, total: progressEvent.total });
+          });
+        },
+      });
+    } catch {
+      translatorCache.delete(key);
+      return null;
+    }
   })();
   translatorCache.set(key, created);
   return created;
