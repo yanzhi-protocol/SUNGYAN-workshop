@@ -64,10 +64,12 @@ export default function BilingualText({ value, zh = "", en = "", as: Tag = "span
     return () => { cancelled = true; };
   }, [directPrimary, directSecondary, sourceChinese, sourceEnglish, primaryLanguage, secondaryLanguage]);
 
+  const hasDistinctSecondary = Boolean(secondaryText.trim() && secondaryText.trim() !== primaryText.trim());
+
   return (
     <Tag id={id} className={`bilingual-text ${preserveLineBreaks ? "bilingual-text--multiline" : ""} ${translating ? "bilingual-text--translating" : ""} ${className}`}>
       <span className="bilingual-primary" aria-busy={translating}>{primaryText}</span>
-      {secondaryText && <span className="bilingual-secondary">{secondaryText}</span>}
+      {hasDistinctSecondary && <span className="bilingual-secondary">{secondaryText}</span>}
     </Tag>
   );
 }

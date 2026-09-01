@@ -57,7 +57,7 @@ function updateDocumentLanguage(language: Language) {
 export default function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [preferences, setPreferencesState] = useState<LanguagePreferences>({ primaryLanguage: "zh", secondaryLanguage: "en" });
   const [hasChosenLanguage, setHasChosenLanguage] = useState(false);
-  const [pickerOpen, setPickerOpen] = useState(true);
+  const [pickerOpen, setPickerOpen] = useState(false);
 
   useEffect(() => {
     try {

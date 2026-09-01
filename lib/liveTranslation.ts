@@ -35,7 +35,32 @@ const BCP47_CODES: Record<Language, string> = {
 };
 
 const resultCache = new Map<string, string>();
+const pendingResultCache = new Map<string, Promise<string | null>>();
 const translatorCache = new Map<string, Promise<NativeTranslator | null>>();
+const TRANSLATION_TIMEOUT_MS = 15000;
+let translationQueue: Promise<void> = Promise.resolve();
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs = TRANSLATION_TIMEOUT_MS): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timeout = window.setTimeout(() => reject(new Error("translation-timeout")), timeoutMs);
+    promise.then(
+      (value) => {
+        window.clearTimeout(timeout);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timeout);
+        reject(error);
+      },
+    );
+  });
+}
+
+function queueNativeTranslation(native: NativeTranslator, text: string): Promise<string> {
+  const task = translationQueue.then(() => withTimeout(native.translate(text)));
+  translationQueue = task.then(() => undefined, () => undefined);
+  return task;
+}
 
 function browserTranslator(): NativeTranslatorApi | null {
   if (typeof window === "undefined") return null;
@@ -146,22 +171,31 @@ export async function translateText(text: string, target: Language, onProgress?:
     return persisted;
   }
 
-  try {
-    const native = await getNativeTranslator(target, onProgress);
-    if (!native) {
-      onProgress?.({ stage: "fallback" });
+  const pending = pendingResultCache.get(key);
+  if (pending) return pending;
+
+  const task = (async () => {
+    try {
+      const native = await getNativeTranslator(target, onProgress);
+      if (!native) {
+        onProgress?.({ stage: "fallback" });
+        return null;
+      }
+      onProgress?.({ stage: "translating" });
+      const result = await queueNativeTranslation(native, text);
+      resultCache.set(key, result);
+      writePersistentCache(key, result);
+      onProgress?.({ stage: "ready" });
+      return result;
+    } catch {
+      onProgress?.({ stage: "error" });
       return null;
+    } finally {
+      pendingResultCache.delete(key);
     }
-    onProgress?.({ stage: "translating" });
-    const result = await native.translate(text);
-    resultCache.set(key, result);
-    writePersistentCache(key, result);
-    onProgress?.({ stage: "ready" });
-    return result;
-  } catch {
-    onProgress?.({ stage: "error" });
-    return null;
-  }
+  })();
+  pendingResultCache.set(key, task);
+  return task;
 }
 
 function protectedMarkdownParts(text: string) {
